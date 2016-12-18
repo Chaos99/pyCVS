@@ -4,7 +4,7 @@ Python 3 fork of http://pycvs.sourceforge.net/
 ## pyCVS - README
 **************************************
 pyCVS is a python library/module for the CVS (Concurrent Versions System)
-protocol. It supports asynchronous (not yet) and synchronous handling of CVS servers.
+protocol. It supports asynchronous and synchronous handling of CVS servers.
 **************************************
 
 The library/ directory holds the pyCVS library.

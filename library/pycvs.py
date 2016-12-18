@@ -100,7 +100,7 @@ class CVS:
                     srv.checkio(-1)
 
             except:    # should we exit here? fix this later
-                raise (CVSException, "checkio_all: checkio failed")
+                raise CVSException("checkio_all: checkio failed")
         return
 
     def checkio_loop_all(self, timeout=0.2):
@@ -131,7 +131,7 @@ class CVS:
                 try:
                     newobj.addevent(en, h[1], h[0])
                 except:    # should we exit here?
-                    raise (CVSException, "newserver: srv.addevent failed")
+                    raise CVSException("newserver: srv.addevent failed")
 
         return newobj
 
@@ -161,7 +161,7 @@ class CVS:
                     try:
                         srv.addevent(en, h[1], h[0])
                     except:    # should we exit here?
-                        raise (CVSException, "addevent: srv.addevent failed")
+                        raise CVSException("addevent: srv.addevent failed")
 
 """
 Singleton implementation for python.
@@ -285,9 +285,9 @@ class Cnetwork:
 
         except socket.error as x:
             self.set_connected(0)
-            raise (NetworkException,
-                   "Unable to connect to %s port %s: %s" %
-                   (self.address, self.port, x))
+            raise NetworkException(
+                  "Unable to connect to %s port %s: %s" %
+                  (self.address, self.port, x))
 
         return
 
@@ -303,24 +303,21 @@ class Cnetwork:
         try:
             self.socket.send(data)
         except socket.error as x:
-            raise (NetworkException,
-                   "Failed sending to %s port %s\n%s" %
-                   (self.address, self.port, x))
+            raise NetworkException("Failed sending to %s port %s\n%s" %
+                                   (self.address, self.port, x))
 
     def read(self, size):
         readbuf = ""
         try:
             readbuf = self.socket.recv(size)
         except socket.error as x:
-            raise (NetworkException,
-                   "Failed reading from %s port %s\n%s" %
-                   (self.address, self.port, x))
+            raise NetworkException("Failed reading from %s port %s\n%s" %
+                                   (self.address, self.port, x))
 
         if readbuf == "":
-            raise (NetworkException,
-                   "Failed reading from %s port %s\n"
-                   "Error while reading from socket (EOF?)\n" %
-                   (self.address, self.port))
+            raise NetworkException("Failed reading from %s port %s\n"
+                                   "Error while reading from socket (EOF?)\n" %
+                                   (self.address, self.port))
 
         return readbuf
 
@@ -352,11 +349,11 @@ class Cnetwork:
         """
 
         if not self.socket:
-            raise (NetworkException, "socket not connected.")
+            raise NetworkException("socket not connected.")
 
         r, w, e = select.select([self.socket], [], [], timeout)
         if self.socket not in r:
-            raise (NetworkException, "socket not ready.")
+            raise NetworkException("socket not ready.")
 
         """ theres data to read in the socket """
         return
@@ -665,9 +662,8 @@ class Cprotocvs:
                     self.res_login(0)
                     return
             else:
-                raise (ServerException,
-                       "unknown answer during login: %s\n"
-                       % (cmd + rest))
+                raise ServerException("unknown answer during login: %s\n"
+                                      % (cmd + rest))
 
         elif cmd == "Valid-requests":
             self.res_validrequests(rest)
@@ -676,7 +672,7 @@ class Cprotocvs:
             self.res_updated(rest)
         else:
             print("UNKNOWN - cmd: %s - data: %s" % (cmd, rest))
-            raise(ServerException, "unknown response received.")
+            raise ServerException("unknown response received.")
 
         # read the status of the reply (ok or error)
         try:
@@ -763,7 +759,7 @@ class Cprotocvs:
         we are logged in and connected to the server """
 
         if not self.get_loggedin():
-            raise(NetworkException, "Not logged in.")
+            raise NetworkException("Not logged in.")
 
         """ we were logged in but the socket is down. """
         if not self.objnet.get_connected():
@@ -1045,7 +1041,7 @@ class Cservercvs:
     """ ADAPTER OUT - calls protocol methods.
     This is a PURE VIRTUAL Method. Allows A/Sync. """
     def hprotocolout(self, reqname, *args):
-        raise(ServerCVSException, "hprotocolout NOT IMPLEMENTED!")
+        raise ServerCVSException("hprotocolout NOT IMPLEMENTED!")
 
     def checkio(self, timeout=0):
         """ add here any other methods to call """
